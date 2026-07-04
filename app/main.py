@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routers import users, categories, transactions
+
 app = FastAPI()
 origins = ["*"]
 
@@ -12,8 +14,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# app.include_router(api_router, prefix="/api")
+app.include_router(users.router)
+app.include_router(categories.router)
+app.include_router(transactions.router)
+
 
 @app.get("/")
 async def health():
-    return {"message": "Healty"}
+    return {"message": "Healthy"}

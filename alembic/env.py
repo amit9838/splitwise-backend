@@ -10,6 +10,8 @@ from app.database import Base
 
 # Import your models so Alembic knows about them
 from app.models.user import User  # noqa: F401 – keep the import even if unused
+from app.models.category import Category  # noqa: F401
+from app.models.transaction import Transaction  # noqa: F401
 
 # Alembic Config object
 config = context.config

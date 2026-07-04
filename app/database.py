@@ -20,7 +20,8 @@ class Base(DeclarativeBase):
     """Base class for all the models"""
     pass
 
-# fastapi dependency: yields an async session and closes it after request
+# FastAPI dependency: yields an async session, commits on success, rolls back on error.
+# The session is automatically closed by the async_session_maker context manager.
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
@@ -28,8 +29,6 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         try:
             yield session
             await session.commit()
-        except Exception as e:
+        except Exception:
             await session.rollback()
-            raise e
-        finally:
-            await session.close()
+            raise
