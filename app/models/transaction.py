@@ -39,7 +39,6 @@ class Transaction(Base):
     updated_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
-        server_default=func.now(),
         onupdate=func.now(),
         default=lambda: datetime.now(timezone.utc),
     )
