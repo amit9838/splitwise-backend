@@ -1,18 +1,21 @@
 import uuid
-from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, responses, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.transaction import Transaction
-from app.schemas.transactions import TransactionCreate, TransactionResponse, TransactionUpdate
+from app.schemas.transactions import (
+    TransactionCreate,
+    TransactionResponse,
+    TransactionUpdate,
+)
 
 router = APIRouter(prefix="/api/transactions", tags=["transactions"])
 
 
-@router.get("/", response_model=List[TransactionResponse])
+@router.get("/", response_model=list[TransactionResponse])
 async def list_transactions(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Transaction))
     transactions = result.scalars().all()
@@ -94,3 +97,4 @@ async def delete_transaction(
         raise HTTPException(status_code=404, detail="Transaction not found")
     await db.delete(transaction)
     await db.flush()
+    return responses.JSONResponse("User deleted successfully!")

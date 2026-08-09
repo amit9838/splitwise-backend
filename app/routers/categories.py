@@ -1,7 +1,7 @@
 import uuid
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +12,7 @@ from app.schemas.categories import CategoryCreate, CategoryResponse, CategoryUpd
 router = APIRouter(prefix="/api/categories", tags=["categories"])
 
 
-@router.get("/", response_model=List[CategoryResponse])
+@router.get("/", response_model=list[CategoryResponse])
 async def list_categories(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Category))
     categories = result.scalars().all()
@@ -30,6 +30,10 @@ async def get_category(category_id: uuid.UUID, db: AsyncSession = Depends(get_db
 
 @router.post("/", response_model=CategoryResponse, status_code=status.HTTP_201_CREATED)
 async def create_category(data: CategoryCreate, db: AsyncSession = Depends(get_db)):
+    existing = await db.execute(select(Category).where(Category.name == data.name))
+    if existing.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="Category already exists!")
+
     category = Category(
         name=data.name,
     )
@@ -64,5 +68,8 @@ async def delete_category(category_id: uuid.UUID, db: AsyncSession = Depends(get
     category = result.scalar_one_or_none()
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
+
+    category_name = category.name
     await db.delete(category)
     await db.flush()
+    return JSONResponse(status_code=200,content=f"Category {category_name} deleted successfully!")

@@ -1,10 +1,9 @@
 import uuid
-from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, responses, status
+from passlib.hash import pbkdf2_sha256
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from passlib.hash import pbkdf2_sha256
 
 from app.database import get_db
 from app.models.user import User
@@ -13,7 +12,7 @@ from app.schemas.user import UserCreate, UserResponse, UserUpdate
 router = APIRouter(prefix="/api/users", tags=["users"])
 
 
-@router.get("/", response_model=List[UserResponse])
+@router.get("/", response_model=list[UserResponse])
 async def list_users(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User))
     users = result.scalars().all()
@@ -82,3 +81,4 @@ async def delete_user(user_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     await db.delete(user)
     await db.flush()
+    return responses.JSONResponse("User deleted successfully!")
