@@ -1,5 +1,8 @@
 from pydantic_settings import BaseSettings
 
+# when using postgres use URL.create_url from sqlalchemy to get correctly escapped string
+# http://alembic.sqlalchemy.org/en/latest/tutorial.html
+
 class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./expense.db"
     JWT_SECRET: str
