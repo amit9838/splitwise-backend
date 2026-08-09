@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy import Boolean, Float, String, Uuid, DateTime, func, ForeignKey
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, String, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -11,9 +11,7 @@ from app.database import Base
 class Transaction(Base):
     __tablename__ = "transactions"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid, primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(
         Uuid, ForeignKey("users.id"), nullable=False, index=True
     )
@@ -28,7 +26,10 @@ class Transaction(Base):
         default=lambda: datetime.now(timezone.utc),
     )
     is_active: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, default=True, server_default="1"
+        Boolean,
+        nullable=False,
+        default=True,
+        server_default="1",
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
