@@ -3,11 +3,11 @@ from datetime import datetime
 
 import pytest
 import pytest_asyncio
-from passlib.hash import pbkdf2_sha256
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
+from app.utils.security import hash_password
 
 
 class TestUserCreate:
@@ -15,7 +15,7 @@ class TestUserCreate:
     async def test_create_user(self, db_session: AsyncSession):
         user = User(
             email="test@example.com",
-            hashed_password=pbkdf2_sha256.hash("securepassword"),
+            hashed_password=hash_password("securepassword"),
             full_name="Test User",
         )
         db_session.add(user)
@@ -34,7 +34,7 @@ class TestUserCreate:
     async def test_create_user_with_defaults(self, db_session: AsyncSession):
         user = User(
             email="minimal@example.com",
-            hashed_password=pbkdf2_sha256.hash("pw"),
+            hashed_password=hash_password("pw"),
         )
         db_session.add(user)
         await db_session.flush()
@@ -46,9 +46,9 @@ class TestUserCreate:
 
     @pytest.mark.asyncio
     async def test_unique_email_constraint(self, db_session: AsyncSession):
-        user1 = User(email="dup@example.com", hashed_password=pbkdf2_sha256.hash("pw"))
+        user1 = User(email="dup@example.com", hashed_password=hash_password("pw"))
         user2 = User(
-            email="dup@example.com", hashed_password=pbkdf2_sha256.hash("pw2")
+            email="dup@example.com", hashed_password=hash_password("pw2")
         )
         db_session.add(user1)
         await db_session.flush()
