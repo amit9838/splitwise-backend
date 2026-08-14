@@ -2,16 +2,20 @@
 import asyncio
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
+from alembic import context
 from app.config import settings
 from app.database import Base
+from app.models.category import Category  # noqa: F401
+from app.models.expense import Expense  # noqa: F401
+from app.models.expense_split import ExpenseSplit  # noqa: F401
+from app.models.group import Group  # noqa: F401
+from app.models.group_member import GroupMember  # noqa: F401
+from app.models.settlement import Settlement  # noqa: F401
 
 # Import your models so Alembic knows about them
-from app.models.user import User  # noqa: F401 – keep the import even if unused
-from app.models.category import Category  # noqa: F401
-from app.models.transaction import Transaction  # noqa: F401
+from app.models.user import User  # noqa: F401
 
 # Alembic Config object
 config = context.config
