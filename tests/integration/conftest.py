@@ -11,7 +11,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from app.database import Base, get_db
 from app.main import app
 from app.models.category import Category
-from app.models.transaction import Transaction
 from app.models.user import User
 
 TEST_DB_URL = "sqlite+aiosqlite://"
@@ -90,20 +89,3 @@ async def seeded_category(db_session: AsyncSession) -> Category:
     return category
 
 
-@pytest_asyncio.fixture
-async def seeded_transaction(
-    db_session: AsyncSession, seeded_user: User, seeded_category: Category
-) -> Transaction:
-    transaction = Transaction(
-        id=uuid.uuid4(),
-        user_id=seeded_user.id,
-        category_id=seeded_category.id,
-        amount=99.99,
-        description="Electricity bill",
-        transaction_date=datetime.now(timezone.utc),
-        is_active=True,
-    )
-    db_session.add(transaction)
-    await db_session.flush()
-    await db_session.refresh(transaction)
-    return transaction
